@@ -20,7 +20,7 @@ public class RotateAxis2 : MonoBehaviour {
     void Update()
     {
         float angle = (float)robotArmScript.theta2;
-        transform.Rotate(0, -(angle - preAngle), 0);
+        transform.Rotate(0, (angle - preAngle), 0);
         preAngle = angle;
     }
 }

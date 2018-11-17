@@ -24,14 +24,14 @@ public class RobotArmControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        keyboardControlTest();
+        keyboardControlTest(ref theta5);
 	}
 
-    void keyboardControlTest(){
+    void keyboardControlTest(ref float controlAxis){
         if (Input.GetKey(KeyCode.A))
-            theta1++;
+            controlAxis++;
         else if (Input.GetKey(KeyCode.S))
-            theta1--;
+            controlAxis--;
     }
     public void Onclick()
     {
