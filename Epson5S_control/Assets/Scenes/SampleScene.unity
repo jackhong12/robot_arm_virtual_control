@@ -447,7 +447,6 @@ GameObject:
   m_Component:
   - component: {fileID: 730769971}
   - component: {fileID: 730769972}
-  - component: {fileID: 730769973}
   m_Layer: 0
   m_Name: Epson5S
   m_TagString: Untagged
@@ -486,17 +485,7 @@ MonoBehaviour:
   theta4: 0
   theta5: 0
   theta6: 0
---- !u!114 &730769973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 730769970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1fe0b0a190eb104a9366a057ec20fc7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  endPoint: []
 --- !u!1001 &773190229
 Prefab:
   m_ObjectHideFlags: 0

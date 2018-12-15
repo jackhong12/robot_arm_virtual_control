@@ -77,6 +77,7 @@ public class TcpServer{
             return false;
 
         //收到新的字串
+        send("ok");
         threadReceive = new Thread(receive);
         threadReceive.IsBackground = true;
         threadReceive.Start();
