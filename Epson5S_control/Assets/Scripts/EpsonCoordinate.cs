@@ -7,6 +7,7 @@ public class EpsonCoordinate{
     public float th1, th2, th3, th4, th5, th6;
     public float uniX, uniY, uniZ;
     public float realX, realY, realZ;
+    public float c4X, c4Y, c4Z;
     private readonly float minth1 = -170, minth2 = -150, minth3 = -70, minth4 = -190, minth5 = -135, minth6 = -360; //theta range
     private readonly float maxth1 = 170, maxth2 = 65, maxth3 = 190, maxth4 = 190, maxth5 = 135, maxth6 = 360;
     //D&H method parameter
@@ -16,6 +17,21 @@ public class EpsonCoordinate{
     public EpsonCoordinate()
     {
         setAngle();
+        uniX = 0;
+        uniY = 0;
+        uniZ = 0;
+        realX = 0;
+        realY = 0;
+        realZ = 0;
+        c4X = 0;
+        c4Y = 0;
+        c4Z = 0;
+        th1 = 0;
+        th2 = 0;
+        th3 = 0;
+        th4 = 0;
+        th5 = 0;
+        th6 = 0;
     }
     public void setAngle(float angle1 = 0, float angle2 = 0, float angle3 = 0, float angle4 = 0, float angle5 = 0, float angle6 = 0)
     {
@@ -155,6 +171,9 @@ public class EpsonCoordinate{
         realX = m.matrix[0, 3] + 199;
         realY = m.matrix[1, 3];
         realZ = m.matrix[2, 3];
+
+        float[] z6 = new float[3] { m.matrix[0, 2], m.matrix[1, 2], m.matrix[2, 2] };
+
 
         uniX = realX;
         uniY = realZ;
