@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
+
 public class EpsonCoordinate{
     public float th1, th2, th3, th4, th5, th6;
+    public float[] newTh = new float[6] { 0, 0, 0, 0, 0, 0 };
     public float uniX, uniY, uniZ;
     public float realX, realY, realZ;
     public float c4X, c4Y, c4Z;
     private readonly float minth1 = -170, minth2 = -150, minth3 = -70, minth4 = -190, minth5 = -135, minth6 = -360; //theta range
     private readonly float maxth1 = 170, maxth2 = 65, maxth3 = 190, maxth4 = 190, maxth5 = 135, maxth6 = 360;
+    private readonly float pi = (float)Math.PI;
     //D&H method parameter
     private readonly float a1 = 0, a2 = 100, a3 = 310, a4 = 40, a5 = 0, a6 = 0;
     private readonly float alp1 = 0, alp2 = 90, alp3 = 0, alp4 = 90, alp5 = -90, alp6 = 90;
@@ -70,9 +73,6 @@ public class EpsonCoordinate{
         Matrix4_4 rz2 = new Matrix4_4();
         rx2.Rx(alp2, a2);
         rz2.Rz(th2, d2);
-        //T01().show("T01");
-        //rx2.show("rx2");
-        //rz2.show("rz2");
         Matrix4_4 checkM = T01().x(rx2).x(rz2);
         mat.show("T02: ");
         checkM.show("T02 check: ");
@@ -99,9 +99,7 @@ public class EpsonCoordinate{
         rx3.Rx(alp3, a3);
         rz3.Rz(th3, d3);
         Matrix4_4 checkM = T02().x(rx3).x(rz3);
-
         mat.show("T03 R:");
-        checkM.show("T03 C:");
         */
         return mat;
     }
@@ -167,12 +165,33 @@ public class EpsonCoordinate{
 
     public void setUniversalCoordinate()
     {
+        Matrix4_4 check = T06();
         Matrix4_4 m = T06();
-        realX = m.matrix[0, 3] + 199;
+        check.show("t02");
+        realX = m.matrix[0, 3];
         realY = m.matrix[1, 3];
         realZ = m.matrix[2, 3];
 
+        //座標6，z軸向量
         float[] z6 = new float[3] { m.matrix[0, 2], m.matrix[1, 2], m.matrix[2, 2] };
+        //座標4的位置
+        float[] coor4 = new float[3] { realX - d6 * z6[0], realY - d6 * z6[1], realZ - d6 * z6[2] };
+
+    
+        //1軸角度推導
+         newTh[0] = (float)Math.Atan2(coor4[1], coor4[0]) * 180 / pi;
+
+        //2、3軸角度推導\
+        float c1;
+        if ((newTh[0] == 0) || (newTh[0] == 180))
+            c1 = coor4[0] / cos(newTh[0]) - a2;
+        else
+            c1 = coor4[1] / sin(newTh[0]) - a2;
+
+        float r1 = (float)Math.Sqrt(a4 * a4 + d4 * d4);
+        float r2 = (float)Math.Sqrt(c1 * c1 + coor4[2] * coor4[2]);
+        float phi1 = (float)Math.Atan2(a4, d4);
+        float phi2 = (float)Math.Atan2(coor4[2], c1);
 
 
         uniX = realX;

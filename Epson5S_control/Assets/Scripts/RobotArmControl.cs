@@ -12,6 +12,7 @@ public class RobotArmControl : MonoBehaviour {
     private readonly float d1 = 199, d2 = 0, d3 = 0, d4 = 305, d5 = 0, d6 = 80;
     private EpsonCoordinate epc;
     public float[] endPoint;
+    public float[] checkAngle = new float[6] { 0, 0, 0, 0, 0, 0 }; 
 
 	// Use this for initialization
 	void Start () {
@@ -34,13 +35,15 @@ public class RobotArmControl : MonoBehaviour {
 
         //epson calculate
         
-        epc.setAngle(theta1, theta2, theta3, theta4, theta5, theta6);
+        epc.setAngle(theta1, theta2 , theta3, theta4, theta5, theta6);
         epc.T06();
         ///*
         epc.setUniversalCoordinate();
-        endPoint[0] = epc.realX;
-        endPoint[1] = epc.realY;
-        endPoint[2] = epc.realZ;
+        endPoint[0] = epc.uniX;
+        endPoint[1] = epc.uniY;
+        endPoint[2] = epc.uniZ;
+
+        checkAngle[0] = epc.newTh[0];
         //*/
 	}
 
