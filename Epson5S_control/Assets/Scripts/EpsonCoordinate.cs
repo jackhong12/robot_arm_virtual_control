@@ -167,7 +167,7 @@ public class EpsonCoordinate{
     {
         Matrix4_4 check = T06();
         Matrix4_4 m = T06();
-        check.show("t02");
+        //check.show("t02");
         realX = m.matrix[0, 3];
         realY = m.matrix[1, 3];
         realZ = m.matrix[2, 3];
@@ -177,9 +177,9 @@ public class EpsonCoordinate{
         //座標4的位置
         float[] coor4 = new float[3] { realX - d6 * z6[0], realY - d6 * z6[1], realZ - d6 * z6[2] };
 
-    
+
         //1軸角度推導
-         newTh[0] = (float)Math.Atan2(coor4[1], coor4[0]) * 180 / pi;
+        newTh[0] = (float)Math.Atan2(coor4[1], coor4[0]) * 180 / pi;
 
         //2、3軸角度推導\
         float c1;
@@ -188,11 +188,45 @@ public class EpsonCoordinate{
         else
             c1 = coor4[1] / sin(newTh[0]) - a2;
 
-        float r1 = (float)Math.Sqrt(a4 * a4 + d4 * d4);
-        float r2 = (float)Math.Sqrt(c1 * c1 + coor4[2] * coor4[2]);
-        float phi1 = (float)Math.Atan2(a4, d4);
-        float phi2 = (float)Math.Atan2(coor4[2], c1);
+        float l23 = (float)Math.Sqrt(c1 * c1 + coor4[2] * coor4[2]);
+        float r4 = (float)Math.Sqrt(a4 * a4 + d4 * d4);
 
+        float cosThPi2 = (l23 * l23 + a3 * a3 - r4 * r4) / (2 * a3 * l23);
+        float gapR4 = (float)Math.Atan2(a4, d4);
+        //th2 th3 可能的角度
+
+        float theta21 = ((float)Math.Acos(cosThPi2) + (float)Math.Atan2(coor4[2], c1)) * 180 / pi;
+        float theta22 = (-(float)Math.Acos(cosThPi2) + (float)Math.Atan2(coor4[2], c1)) * 180 / pi;
+        float phi31 = (float)Math.Atan2((coor4[2] - a3 * sin(180 - theta21)) / r4, (-c1 - a3 * cos(180 - theta21)) / r4);
+        float phi32 = (float)Math.Atan2((coor4[2] - a3 * sin(180 - theta22)) / r4, (-c1 - a3 * cos(180 - theta22)) / r4);
+        float theta31 = 270 - (phi31 + gapR4) * 180 / pi - theta21;
+        float theta32 = 270 - (phi32 + gapR4) * 180 / pi - theta22;
+
+        //th2 th3 角度分類
+        float th23case1 = a3 + a4 * cos(theta31) + d4 * sin(theta31) - c1 * cos(theta21) - coor4[2] * sin(theta21);
+        float th23case2 = a3 + a4 * cos(theta32) + d4 * sin(theta32) - c1 * cos(theta22) - coor4[2] * sin(theta22);
+
+        //4、5、6軸
+        Matrix4_4 t03 = T03();
+        Matrix4_4 t36 = t03.invert().x(m);
+
+        if(t36.matrix[1,2] == -1)
+        {
+            newTh[4] = 0;
+        }
+        else if(t36.matrix[1, 2] == 1)
+        {
+            newTh[4] = 180;
+        }
+        else
+        {
+            newTh[5] = (float)Math.Atan2(-t36.matrix[1, 1], t36.matrix[1, 0]) * 180 / pi;
+            newTh[3] = (float)Math.Atan2(t36.matrix[2, 2], t36.matrix[0, 2]) * 180 / pi;
+            if ((newTh[3] == 0) || (newTh[3] == 180))
+                newTh[4] = (float)Math.Atan2(t36.matrix[0, 2] / cos(newTh[3]), -t36.matrix[1, 2]) * 180 / pi;
+            else
+                newTh[4] = (float)Math.Atan2(t36.matrix[0, 2] / cos(newTh[3]), -t36.matrix[1, 2]) * 180 / pi;
+        }
 
         uniX = realX;
         uniY = realZ;

@@ -44,6 +44,9 @@ public class RobotArmControl : MonoBehaviour {
         endPoint[2] = epc.uniZ;
 
         checkAngle[0] = epc.newTh[0];
+        checkAngle[1] = checkAngle[1];
+        checkAngle[2] = checkAngle[2];
+        checkAngle[3] = checkAngle[3];
         //*/
 	}
 

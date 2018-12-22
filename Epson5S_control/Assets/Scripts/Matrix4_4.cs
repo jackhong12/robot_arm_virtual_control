@@ -103,8 +103,11 @@ public class Matrix4_4{
             {
                 output.setM(i, j, matrix[j - 1, i - 1]);
             }
-            output.setM(i, 4, -matrix[i - 1, 3]);
+            //output.setM(i, 4, -matrix[i - 1, 3]);
         }
+        output.setM(1, 4, -(matrix[0, 0] * matrix[0, 3] + matrix[1, 0] * matrix[1, 3] + matrix[2, 0] * matrix[2, 3]));
+        output.setM(2, 4, -(matrix[0, 1] * matrix[0, 3] + matrix[1, 1] * matrix[1, 3] + matrix[2, 1] * matrix[2, 3]));
+        output.setM(3, 4, -(matrix[0, 2] * matrix[0, 3] + matrix[1, 2] * matrix[1, 3] + matrix[2, 2] * matrix[2, 3]));
         return output;
     }
 
