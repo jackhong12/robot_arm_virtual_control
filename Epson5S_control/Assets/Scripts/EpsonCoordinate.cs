@@ -327,6 +327,43 @@ public class EpsonCoordinate{
         return setUniversalCoordinate();
     }
 
+    //世界座標旋轉
+    public bool rotateUniX(float [] angle, float rotateAngle)
+    {
+        setPreT06(angle);
+        Matrix4_4 flag;
+        Matrix4_4 rx = new Matrix4_4();
+        rx.Rx(rotateAngle);
+        flag = rx.x(preM);
+        preM.changeRotateMatrix(flag);
+
+        return setUniversalCoordinate();
+    }
+
+    public bool rotateUniY(float[] angle, float rotateAngle)
+    {
+        setPreT06(angle);
+        Matrix4_4 flag;
+        Matrix4_4 ry = new Matrix4_4();
+        ry.Ry(rotateAngle);
+        flag = ry.x(preM);
+        preM.changeRotateMatrix(flag);
+
+        return setUniversalCoordinate();
+    }
+
+    public bool rotateUniZ(float[] angle, float rotateAngle)
+    {
+        setPreT06(angle);
+        Matrix4_4 flag;
+        Matrix4_4 rz = new Matrix4_4();
+        rz.Rz(rotateAngle);
+        flag = rz.x(preM);
+        preM.changeRotateMatrix(flag);
+
+        return setUniversalCoordinate();
+    }
+
     //得到previous state的T06轉移矩陣
     private void setPreT06(float [] angle)
     {
@@ -338,9 +375,6 @@ public class EpsonCoordinate{
         th6 = angle[5];
 
         preM = T06();
-        //Matrix4_4 invert = preM.invert();
-        //preM.show("preM: ");
-        //invert.x(preM).show("I: ");
 
         for (int i = 0; i < 6; i++)
             preTh[i] = angle[i];

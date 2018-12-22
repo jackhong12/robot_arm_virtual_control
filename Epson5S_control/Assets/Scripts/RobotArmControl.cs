@@ -34,7 +34,7 @@ public class RobotArmControl : MonoBehaviour {
         keyboardControlTest(ref theta5);
 
         float[] angle = new float[6] { theta1, theta2, theta3, theta4, theta5, theta6 };
-        epc.moveUniZ(angle, 0);
+        //epc.moveUniZ(angle, 0);
 
         //epson calculate
 
@@ -69,6 +69,18 @@ public class RobotArmControl : MonoBehaviour {
             flag = epc.moveUniY(angle, 5);
         else if (Input.GetKey(KeyCode.H))
             flag = epc.moveUniY(angle, -5);
+        if (Input.GetKey(KeyCode.Q))
+            flag = epc.rotateUniX(angle, 5);
+        else if (Input.GetKey(KeyCode.W))
+            flag = epc.rotateUniX(angle, -5);
+        if (Input.GetKey(KeyCode.E))
+            flag = epc.rotateUniY(angle, 5);
+        else if (Input.GetKey(KeyCode.R))
+            flag = epc.rotateUniY(angle, -5);
+        if (Input.GetKey(KeyCode.T))
+            flag = epc.rotateUniZ(angle, 5);
+        else if (Input.GetKey(KeyCode.Y))
+            flag = epc.rotateUniZ(angle, -5);
         if (flag)
         {
             theta1 = epc.newTh[0];

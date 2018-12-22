@@ -62,6 +62,17 @@ public class Matrix4_4{
         matrix[2, 2] = matrix[1, 1];
     }
 
+    //y軸轉換 (角度, 距離)
+    public void Ry(float angle, float disY = 0)
+    {
+        identity();
+        matrix[0, 0] = cosd(angle);
+        matrix[0, 2] = sind(angle);
+        matrix[1, 3] = disY;
+        matrix[2, 0] = -sind(angle);
+        matrix[2, 2] = cosd(angle);
+    }
+
     //z軸轉換 (角度, 距離)
     public void Rz(float angle, float dis = 0)
     {
@@ -111,6 +122,13 @@ public class Matrix4_4{
         return output;
     }
 
+    //改變旋轉矩陣
+    public void changeRotateMatrix(Matrix4_4 changeM)
+    {
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                matrix[i, j] = changeM.matrix[i, j];
+    }
 
     //顯示矩陣
     public void show(string strIn = "")
@@ -127,6 +145,7 @@ public class Matrix4_4{
         }
         Debug.Log(str);
     }
+
 
     
     //三角函數
