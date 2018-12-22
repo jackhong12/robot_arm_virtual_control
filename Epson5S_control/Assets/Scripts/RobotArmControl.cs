@@ -33,15 +33,15 @@ public class RobotArmControl : MonoBehaviour {
 	void FixedUpdate () {
         keyboardControlTest(ref theta5);
 
+        float[] angle = new float[6] { theta1, theta2, theta3, theta4, theta5, theta6 };
+        epc.moveUniZ(angle, 0);
+
         //epson calculate
-        
-        epc.setAngle(theta1, theta2 , theta3, theta4, theta5, theta6);
-        epc.T06();
-        ///*
-        epc.setUniversalCoordinate();
-        endPoint[0] = epc.uniX;
-        endPoint[1] = epc.uniY;
-        endPoint[2] = epc.uniZ;
+
+
+        endPoint[0] = epc.realX;
+        endPoint[1] = epc.realY;
+        endPoint[2] = epc.realZ;
 
         checkAngle[0] = epc.newTh[0];
         checkAngle[1] = epc.newTh[1];
@@ -49,14 +49,38 @@ public class RobotArmControl : MonoBehaviour {
         checkAngle[3] = epc.newTh[3];
         checkAngle[4] = epc.newTh[4];
         checkAngle[5] = epc.newTh[5];
-        //*/
     }
 
     void keyboardControlTest(ref float controlAxis){
+        float[] angle = new float[6] { theta1, theta2, theta3, theta4, theta5, theta6 };
+
+        bool flag = false;
+
         if (Input.GetKey(KeyCode.A))
-            controlAxis++;
+            flag = epc.moveUniZ(angle, 5);
+            
         else if (Input.GetKey(KeyCode.S))
-            controlAxis--;
+            flag = epc.moveUniZ(angle, -5);
+        if (Input.GetKey(KeyCode.D))
+            flag = epc.moveUniX(angle, 5);
+        else if (Input.GetKey(KeyCode.F))
+            flag = epc.moveUniX(angle, -5);
+        if (Input.GetKey(KeyCode.G))
+            flag = epc.moveUniY(angle, 5);
+        else if (Input.GetKey(KeyCode.H))
+            flag = epc.moveUniY(angle, -5);
+        if (flag)
+        {
+            theta1 = epc.newTh[0];
+            theta2 = epc.newTh[1] - 90;
+            theta3 = epc.newTh[2];
+            theta4 = epc.newTh[3];
+            theta5 = epc.newTh[4];
+            theta6 = epc.newTh[5];
+            flag = false;
+        }
+
+        
     }
     public void Onclick()
     {

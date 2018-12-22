@@ -7,6 +7,7 @@ using UnityEngine;
 public class EpsonCoordinate{
     public float th1, th2, th3, th4, th5, th6;
     public float[] newTh = new float[6] { 0, 0, 0, 0, 0, 0 };
+    public float[] preTh = new float[6] { 0, 0, 0, 0, 0, 0 };
     public float uniX, uniY, uniZ;
     public float realX, realY, realZ;
     public float c4X, c4Y, c4Z;
@@ -17,6 +18,7 @@ public class EpsonCoordinate{
     private readonly float a1 = 0, a2 = 100, a3 = 310, a4 = 40, a5 = 0, a6 = 0;
     private readonly float alp1 = 0, alp2 = 90, alp3 = 0, alp4 = 90, alp5 = -90, alp6 = 90;
     private readonly float d1 = 199, d2 = 0, d3 = 0, d4 = 305, d5 = 0, d6 = 80;
+    private Matrix4_4 preM;
     public EpsonCoordinate()
     {
         setAngle();
@@ -163,11 +165,24 @@ public class EpsonCoordinate{
         return mat;
     }
 
-    public void setUniversalCoordinate()
+    public Matrix4_4 T36()
     {
-        Matrix4_4 check = T06();
-        Matrix4_4 m = T06();
-        //check.show("t02");
+        float[,] m = new float[4, 4]{
+            { cos(th4) * cos(th5) * cos(th6) - sin(th4) * sin(th6), -cos(th4) * cos(th5) * sin(th6) - sin(th4) * cos(th5), cos(th4) * sin(th5), a4 + d6 * cos(th4) * sin(th5)},
+            { sin(th5) * cos(th6), -sin(th5) * sin(th6), -cos(th5), -d4 - d6 * cos(th5)},
+            { sin(th4) * cos(th5) * cos(th6) + cos(th4) * sin(th6), -sin(th4) * cos(th5) * sin(th6) + cos(th4) * cos(th6), sin(th4) * sin(th5), d6 * sin(th4) * sin(th5)},
+            { 0, 0, 0, 1}
+        };
+        Matrix4_4 mat = new Matrix4_4();
+        mat.setM(m);
+
+        return mat;
+    }
+
+    public bool setUniversalCoordinate()
+    {
+        Matrix4_4 m = preM;
+
         realX = m.matrix[0, 3];
         realY = m.matrix[1, 3];
         realZ = m.matrix[2, 3];
@@ -179,7 +194,14 @@ public class EpsonCoordinate{
 
 
         //1軸角度推導
-        newTh[0] = (float)Math.Atan2(coor4[1], coor4[0]) * 180 / pi;
+        th1 = (float)Math.Atan2(coor4[1], coor4[0]) * 180 / pi;
+        if((cos(th1) * cos(preTh[0]) + sin(th1) * sin(preTh[0])) > 0)
+            newTh[0] = th1;
+        else
+        {
+            th1 = (float)Math.Atan2(-coor4[1], -coor4[0]) * 180 / pi;
+            newTh[0] = th1;
+        }
 
         //2、3軸角度推導\
         float c1;
@@ -191,10 +213,13 @@ public class EpsonCoordinate{
         float l23 = (float)Math.Sqrt(c1 * c1 + coor4[2] * coor4[2]);
         float r4 = (float)Math.Sqrt(a4 * a4 + d4 * d4);
 
+        //檢查是否有解
         float cosThPi2 = (l23 * l23 + a3 * a3 - r4 * r4) / (2 * a3 * l23);
+        if ((cosThPi2 > 1) || (cosThPi2 < -1))
+            return false;
+
         float gapR4 = (float)Math.Atan2(a4, d4);
         //th2 th3 可能的角度
-
         float theta21 = ((float)Math.Acos(cosThPi2) + (float)Math.Atan2(coor4[2], c1)) * 180 / pi;
         float theta22 = (-(float)Math.Acos(cosThPi2) + (float)Math.Atan2(coor4[2], c1)) * 180 / pi;
         float phi31 = (float)Math.Atan2((coor4[2] - a3 * sin(180 - theta21)) / r4, (-c1 - a3 * cos(180 - theta21)) / r4);
@@ -202,8 +227,23 @@ public class EpsonCoordinate{
         float theta31 = 270 - (phi31 + gapR4) * 180 / pi - theta21;
         float theta32 = 270 - (phi32 + gapR4) * 180 / pi - theta22;
 
-        newTh[1] = theta21;
-        newTh[2] = theta31;
+        //選擇角度
+        if((cos(theta21)*cos(preTh[1]) + sin(theta21)*sin(preTh[1])) > (cos(theta22) * cos(preTh[1]) + sin(theta22) * sin(preTh[1])))
+        {
+            //Debug.Log(theta32);
+            newTh[1] = theta21;
+            th2 = theta21;
+            newTh[2] = theta31;
+            th3 = theta31;
+        }
+        else
+        {
+            newTh[1] = theta22;
+            th2 = theta22;
+            newTh[2] = theta32;
+            th3 = theta32;
+        }
+
 
         //th2 th3 角度分類
         float th23case1 = a3 + a4 * cos(theta31) + d4 * sin(theta31) - c1 * cos(theta21) - coor4[2] * sin(theta21);
@@ -212,32 +252,99 @@ public class EpsonCoordinate{
         //4、5、6軸
         Matrix4_4 t03 = T03();
         Matrix4_4 t36 = t03.invert().x(m);
+        Matrix4_4 t36c = T36();
 
         if(t36.matrix[1,2] == -1)
         {
+            float checkValue = t36.matrix[0, 0] - t36.matrix[2, 1];
+            if (!((checkValue < 0.0001) && (checkValue > -0.0001)))
+            {
+                Debug.Log("break");
+                return false;
+
+            }
+            //t36.show("t03: ");  
             newTh[4] = 0;
             newTh[3] = 0;
-            newTh[5] = (float)Math.Atan2(t36.matrix[2, 0], t36.matrix[0, 0]);
+            newTh[5] = (float)Math.Atan2(t36.matrix[2, 0], t36.matrix[0, 0]) * 180 / pi;
         }
         else if(t36.matrix[1, 2] == 1)
         {
+            float checkValue = t36.matrix[0, 0] + t36.matrix[2, 1];
+            if (!((checkValue < 0.0001) && (checkValue > -0.0001)))
+            {
+                Debug.Log("break");
+                return false;
+            }
+            //t36.show("t03: ");
             newTh[4] = 180;
             newTh[3] = 0;
-            newTh[5] = (float)Math.Atan2(t36.matrix[2, 0], -t36.matrix[0, 0]);
+            newTh[5] = (float)Math.Atan2(t36.matrix[2, 0], -t36.matrix[0, 0]) * 180 / pi;
         }
         else
         {
+            //t36.show("fake: ");
+            
             newTh[5] = (float)Math.Atan2(-t36.matrix[1, 1], t36.matrix[1, 0]) * 180 / pi;
             newTh[3] = (float)Math.Atan2(t36.matrix[2, 2], t36.matrix[0, 2]) * 180 / pi;
             if ((newTh[3] == 0) || (newTh[3] == 180))
                 newTh[4] = (float)Math.Atan2(t36.matrix[0, 2] / cos(newTh[3]), -t36.matrix[1, 2]) * 180 / pi;
             else
-                newTh[4] = (float)Math.Atan2(t36.matrix[0, 2] / cos(newTh[3]), -t36.matrix[1, 2]) * 180 / pi;
+                newTh[4] = (float)Math.Atan2(t36.matrix[2, 2] / sin(newTh[3]), -t36.matrix[1, 2]) * 180 / pi;
         }
 
         uniX = realX;
         uniY = realZ;
         uniZ = realY;
+
+        th4 = newTh[3];
+        th5 = newTh[4];
+        th6 = newTh[5];
+        //preM.show("preState");
+        //T06().show("nowState");
+        return true;
+    }
+
+    //世界座標直線移動
+    public bool moveUniX(float [] angle, float step)
+    {
+        setPreT06(angle);
+        preM.matrix[0, 3] += step;
+        return setUniversalCoordinate();
+    }
+
+    public bool moveUniY(float [] angle, float step)
+    {
+        setPreT06(angle);
+        preM.matrix[1, 3] += step;
+        return setUniversalCoordinate();
+    }
+
+    public bool moveUniZ(float [] angle, float step)
+    {
+        setPreT06(angle);
+        preM.matrix[2, 3] += step;
+        return setUniversalCoordinate();
+    }
+
+    //得到previous state的T06轉移矩陣
+    private void setPreT06(float [] angle)
+    {
+        th1 = angle[0];
+        th2 = angle[1] + 90;
+        th3 = angle[2];
+        th4 = angle[3];
+        th5 = angle[4];
+        th6 = angle[5];
+
+        preM = T06();
+        //Matrix4_4 invert = preM.invert();
+        //preM.show("preM: ");
+        //invert.x(preM).show("I: ");
+
+        for (int i = 0; i < 6; i++)
+            preTh[i] = angle[i];
+        preTh[1] += 90;
     }
 
     //三角函數
