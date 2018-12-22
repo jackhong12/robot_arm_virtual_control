@@ -202,6 +202,9 @@ public class EpsonCoordinate{
         float theta31 = 270 - (phi31 + gapR4) * 180 / pi - theta21;
         float theta32 = 270 - (phi32 + gapR4) * 180 / pi - theta22;
 
+        newTh[1] = theta21;
+        newTh[2] = theta31;
+
         //th2 th3 角度分類
         float th23case1 = a3 + a4 * cos(theta31) + d4 * sin(theta31) - c1 * cos(theta21) - coor4[2] * sin(theta21);
         float th23case2 = a3 + a4 * cos(theta32) + d4 * sin(theta32) - c1 * cos(theta22) - coor4[2] * sin(theta22);
@@ -213,10 +216,14 @@ public class EpsonCoordinate{
         if(t36.matrix[1,2] == -1)
         {
             newTh[4] = 0;
+            newTh[3] = 0;
+            newTh[5] = (float)Math.Atan2(t36.matrix[2, 0], t36.matrix[0, 0]);
         }
         else if(t36.matrix[1, 2] == 1)
         {
             newTh[4] = 180;
+            newTh[3] = 0;
+            newTh[5] = (float)Math.Atan2(t36.matrix[2, 0], -t36.matrix[0, 0]);
         }
         else
         {

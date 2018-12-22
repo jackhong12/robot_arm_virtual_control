@@ -44,11 +44,13 @@ public class RobotArmControl : MonoBehaviour {
         endPoint[2] = epc.uniZ;
 
         checkAngle[0] = epc.newTh[0];
-        checkAngle[1] = checkAngle[1];
-        checkAngle[2] = checkAngle[2];
-        checkAngle[3] = checkAngle[3];
+        checkAngle[1] = epc.newTh[1];
+        checkAngle[2] = epc.newTh[2];
+        checkAngle[3] = epc.newTh[3];
+        checkAngle[4] = epc.newTh[4];
+        checkAngle[5] = epc.newTh[5];
         //*/
-	}
+    }
 
     void keyboardControlTest(ref float controlAxis){
         if (Input.GetKey(KeyCode.A))
