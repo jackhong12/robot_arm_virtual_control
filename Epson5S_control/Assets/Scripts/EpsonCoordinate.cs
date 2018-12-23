@@ -364,6 +364,68 @@ public class EpsonCoordinate{
         return setUniversalCoordinate();
     }
 
+    //6軸座標移動
+    public bool moveAxis6X(float [] angle, float dis)
+    {
+        setPreT06(angle);
+        preM.matrix[0, 3] += dis * preM.matrix[0, 0];
+        preM.matrix[1, 3] += dis * preM.matrix[1, 0];
+        preM.matrix[2, 3] += dis * preM.matrix[2, 0];
+        return setUniversalCoordinate();
+    }
+
+    public bool moveAxis6Y(float[] angle, float dis)
+    {
+        setPreT06(angle);
+        preM.matrix[0, 3] += dis * preM.matrix[0, 1];
+        preM.matrix[1, 3] += dis * preM.matrix[1, 1];
+        preM.matrix[2, 3] += dis * preM.matrix[2, 1];
+        return setUniversalCoordinate();
+    }
+
+    public bool moveAxis6Z(float[] angle, float dis)
+    {
+        setPreT06(angle);
+        preM.matrix[0, 3] += dis * preM.matrix[0, 2];
+        preM.matrix[1, 3] += dis * preM.matrix[1, 2];
+        preM.matrix[2, 3] += dis * preM.matrix[2, 2];
+        return setUniversalCoordinate();
+    }
+
+    //6軸座標旋轉
+    public bool rotateAxis6X(float[] angle, float rotateAngle)
+    {
+        setPreT06(angle);
+        Matrix4_4 flag;
+        Matrix4_4 rx = new Matrix4_4();
+        rx.Rx(rotateAngle);
+        flag = preM.x(rx);
+        preM.changeRotateMatrix(flag);
+        return setUniversalCoordinate();
+    }
+
+    public bool rotateAxis6Y(float[] angle, float rotateAngle)
+    {
+        setPreT06(angle);
+        Matrix4_4 flag;
+        Matrix4_4 ry = new Matrix4_4();
+        ry.Ry(rotateAngle);
+        flag = preM.x(ry);
+        preM.changeRotateMatrix(flag);
+        return setUniversalCoordinate();
+    }
+
+    public bool rotateAxis6Z(float[] angle, float rotateAngle)
+    {
+        setPreT06(angle);
+        Matrix4_4 flag;
+        Matrix4_4 rz = new Matrix4_4();
+        rz.Rz(rotateAngle);
+        flag = preM.x(rz);
+        preM.changeRotateMatrix(flag);
+        return setUniversalCoordinate();
+    }
+
     //得到previous state的T06轉移矩陣
     private void setPreT06(float [] angle)
     {

@@ -29,6 +29,13 @@ public class Matrix4_4{
         //matrix[0, 0] = 0;
     }
 
+    public void set(Matrix4_4 m)
+    {
+        for (int i = 0; i < 4; i++)
+            for (int j = 0; j < 4; j++)
+                matrix[i, j] = m.matrix[i, j];
+    }
+
     //設置舉陣 1 <= i <= 4; 1 <= j <= 4 
     public void setM(int row, int column, float value)
     {

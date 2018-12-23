@@ -31,7 +31,8 @@ public class RobotArmControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        keyboardControlTest(ref theta5);
+        //keyboardAxis6Control();
+        keyboardUniControl();
 
         float[] angle = new float[6] { theta1, theta2, theta3, theta4, theta5, theta6 };
         //epc.moveUniZ(angle, 0);
@@ -51,24 +52,23 @@ public class RobotArmControl : MonoBehaviour {
         checkAngle[5] = epc.newTh[5];
     }
 
-    void keyboardControlTest(ref float controlAxis){
+    void keyboardUniControl(){
         float[] angle = new float[6] { theta1, theta2, theta3, theta4, theta5, theta6 };
 
         bool flag = false;
 
         if (Input.GetKey(KeyCode.A))
-            flag = epc.moveUniZ(angle, 5);
-            
+            flag = epc.moveUniX(angle, 5);            
         else if (Input.GetKey(KeyCode.S))
-            flag = epc.moveUniZ(angle, -5);
-        if (Input.GetKey(KeyCode.D))
-            flag = epc.moveUniX(angle, 5);
-        else if (Input.GetKey(KeyCode.F))
             flag = epc.moveUniX(angle, -5);
-        if (Input.GetKey(KeyCode.G))
+        if (Input.GetKey(KeyCode.D))
             flag = epc.moveUniY(angle, 5);
-        else if (Input.GetKey(KeyCode.H))
+        else if (Input.GetKey(KeyCode.F))
             flag = epc.moveUniY(angle, -5);
+        if (Input.GetKey(KeyCode.G))
+            flag = epc.moveUniZ(angle, 5);
+        else if (Input.GetKey(KeyCode.H))
+            flag = epc.moveUniZ(angle, -5);
         if (Input.GetKey(KeyCode.Q))
             flag = epc.rotateUniX(angle, 5);
         else if (Input.GetKey(KeyCode.W))
@@ -91,9 +91,50 @@ public class RobotArmControl : MonoBehaviour {
             theta6 = epc.newTh[5];
             flag = false;
         }
-
-        
     }
+
+    void keyboardAxis6Control()
+    {
+        float[] angle = new float[6] { theta1, theta2, theta3, theta4, theta5, theta6 };
+
+        bool flag = false;
+
+        if (Input.GetKey(KeyCode.A))
+            flag = epc.moveAxis6X(angle, 5);
+        else if (Input.GetKey(KeyCode.S))
+            flag = epc.moveAxis6X(angle, -5);
+        if (Input.GetKey(KeyCode.D))
+            flag = epc.moveAxis6Y(angle, 5);
+        else if (Input.GetKey(KeyCode.F))
+            flag = epc.moveAxis6Y(angle, -5);
+        if (Input.GetKey(KeyCode.G))
+            flag = epc.moveAxis6Z(angle, 5);
+        else if (Input.GetKey(KeyCode.H))
+            flag = epc.moveAxis6Z(angle, -5);
+        if (Input.GetKey(KeyCode.Q))
+            flag = epc.rotateAxis6X(angle, 5);
+        else if (Input.GetKey(KeyCode.W))
+            flag = epc.rotateAxis6X(angle, -5);
+        if (Input.GetKey(KeyCode.E))
+            flag = epc.rotateAxis6Y(angle, 5);
+        else if (Input.GetKey(KeyCode.R))
+            flag = epc.rotateAxis6Y(angle, -5);
+        if (Input.GetKey(KeyCode.T))
+            flag = epc.rotateAxis6Z(angle, 5);
+        else if (Input.GetKey(KeyCode.Y))
+            flag = epc.rotateAxis6Z(angle, -5);
+        if (flag)
+        {
+            theta1 = epc.newTh[0];
+            theta2 = epc.newTh[1] - 90;
+            theta3 = epc.newTh[2];
+            theta4 = epc.newTh[3];
+            theta5 = epc.newTh[4];
+            theta6 = epc.newTh[5];
+            flag = false;
+        }
+    }
+
     public void Onclick()
     {
         theta1++;
